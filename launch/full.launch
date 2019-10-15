@@ -1,0 +1,4 @@
+<launch>
+<node name="mover" type="gripper" pkg="me495_markers" output="screen" />
+<node name="rviz" type="rviz" pkg="rviz" args="-d $(find me495_markers)/gripper.rviz" />
+</launch>
