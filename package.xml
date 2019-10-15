@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>me495_markers</name>
+  <version>0.0.0</version>
+  <description>An experiment with markers</description>
+
+  <maintainer email="elwin@northwestern.edu">Matthew Elwin</maintainer>
+
+  <license>GPLv3</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <depend>visualization_msgs</depend>
+  <depend>interactive_markers</depend>
+</package>
