@@ -3,12 +3,12 @@
 # code is not distributed to the class as it must be recreated in class
 import rospy
 from interactive_markers.interactive_marker_server import InteractiveMarkerServer, InteractiveMarker 
-from visualization_msgs.msg import Marker, InteractiveMarkerControl
+from visualization_msgs.msg import Marker, InteractiveMarkerControl, MarkerArray
 
 
 class Gripper(object):
     def __init__(self):
-        self.pub1 = rospy.Publisher("visualization_marker1", Marker, queue_size = 1)
+        self.pub1 = rospy.Publisher("visualization_marker1", Marker, queue_size = 2)
         # The second link is oriented at 90 degrees
         self.m = Marker()
         self.m.header.frame_id = "base"
