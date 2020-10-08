@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.8)
 project(me495_markers)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -7,7 +7,7 @@ project(me495_markers)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS interactive_markers visualization_msgs)
+find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -101,7 +101,7 @@ find_package(catkin REQUIRED COMPONENTS interactive_markers visualization_msgs)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES me495_markers
-  CATKIN_DEPENDS visualization_msgs
+#  CATKIN_DEPENDS 
 #  DEPENDS system_lib
 )
 
@@ -149,7 +149,8 @@ include_directories(
 #############
 ## Install ##
 #############
-
+catkin_install_python(PROGRAMS nodes/gripper
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 

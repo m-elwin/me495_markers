@@ -1,6 +1,13 @@
 #!/usr/bin/env python
-# This is quick and dirty code for an in-class demo.  Source
-# code is not distributed to the class as it must be recreated in class
+""" Draw robotic grippers using RVIZ markers and make them interactive.
+
+PUBLISHES:
+visualization_marker1 (visualization_messages/Marker) - The markers that we are drawing
+
+SUBSCRIBES:
+Subscribes to an interactive marker server
+"""
+
 import rospy
 from interactive_markers.interactive_marker_server import InteractiveMarkerServer, InteractiveMarker 
 from visualization_msgs.msg import Marker, InteractiveMarkerControl, MarkerArray
@@ -90,6 +97,7 @@ class Gripper(object):
         self.server.applyChanges()
 
     def callback(self,feedback):
+        """ Callback for interactive markers.  feedback contains the pose of the marker from rviz """
         w = feedback.pose.orientation.w
         self.m.pose.position.x = 3*w
         self.m1.pose.position.x = -self.m.pose.position.x
