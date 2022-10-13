@@ -1,0 +1,4 @@
+<launch>
+  <node exec="gripper" pkg="me495_markers" output="screen" />
+  <node exec="rviz2" pkg="rviz2" args="-d $(find-pkg-share me495_markers)/gripper.rviz" />
+</launch>
