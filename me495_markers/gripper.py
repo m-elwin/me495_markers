@@ -28,6 +28,12 @@ class Gripper(Node):
         world_base_tf.child_frame_id = "base"
         self.static_broadcaster.sendTransform(world_base_tf)
 
+        # We use TRANSIENT_LOCAL durability for the publisher. By setting both publisher and subscriber
+        # Durability to TRANSIENT_LOCAL we emulate the effect of "latched publishers" from ROS 1
+        # (See https://github.com/ros2/ros2/issues/464)
+        # Essentially this means that when subscribers first connect to the topic they receive the
+        # last message published on the topic. Useful for example because rviz might open after
+        # the initial markers are published
         markerQoS = QoSProfile(depth=10, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
         self.pub1 = self.create_publisher(Marker, "visualization_marker", markerQoS)
         # The second link is oriented at 90 degrees
