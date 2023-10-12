@@ -1,4 +1,5 @@
 <launch>
+  <arg name="use_rviz" default="true" description="Launch rviz (true | false)" />
   <node exec="gripper" pkg="me495_markers" output="screen" />
-  <node exec="rviz2" pkg="rviz2" args="-d $(find-pkg-share me495_markers)/gripper.rviz" />
+  <node if="$(var use_rviz)" exec="rviz2" pkg="rviz2" args="-d $(find-pkg-share me495_markers)/gripper.rviz" />
 </launch>

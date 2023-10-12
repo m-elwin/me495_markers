@@ -7,15 +7,15 @@ from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from interactive_markers.interactive_marker_server import InteractiveMarkerServer, InteractiveMarker
 from visualization_msgs.msg import Marker, InteractiveMarkerControl, MarkerArray
-
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 
 class Gripper(Node):
     """
     PUBLISHES:
-    visualization_marker (visualization_messages/Marker) - The markers that we are drawing
+    visualization_marker (visualization_messages/msg/Marker) - The markers that we are drawing
 
     SUBSCRIBES:
-    Subscribes to an interactive marker server
+    Subscribes: to an interactive marker server
     """
     def __init__(self):
         super().__init__("gripper")
@@ -27,7 +27,8 @@ class Gripper(Node):
         world_base_tf.child_frame_id = "base"
         self.static_broadcaster.sendTransform(world_base_tf)
 
-        self.pub1 = self.create_publisher(Marker, "visualization_marker", 10)
+        markerQoS = QoSProfile(depth=10, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
+        self.pub1 = self.create_publisher(Marker, "visualization_marker", markerQoS)
         # The second link is oriented at 90 degrees
         self.m = Marker()
         self.m.header.frame_id = "base"
