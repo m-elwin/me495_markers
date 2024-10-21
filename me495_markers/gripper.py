@@ -1,44 +1,52 @@
-"""Draw robotic grippers using RVIZ markers and make them interactive. """
+"""Draw robotic grippers using RVIZ markers and make them interactive."""
 
 
+from geometry_msgs.msg import TransformStamped
+from interactive_markers.interactive_marker_server import (
+    InteractiveMarker, InteractiveMarkerServer)
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSDurabilityPolicy, QoSProfile
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
-from geometry_msgs.msg import TransformStamped
-from interactive_markers.interactive_marker_server import InteractiveMarkerServer, InteractiveMarker
-from visualization_msgs.msg import Marker, InteractiveMarkerControl, MarkerArray
+from visualization_msgs.msg import InteractiveMarkerControl, Marker
 
-from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 
 class Gripper(Node):
     """
-    PUBLISHES:
+    Simulates a gripper using markers.
+
+    PUBLISHES
+    ---------
+
     visualization_marker (visualization_messages/msg/Marker) - The markers that we are drawing
 
-    SUBSCRIBES:
-    Subscribes: to an interactive marker server
+    SUBSCRIBES
+    ----------
+    gripper_marker interactive marker server
     """
+
     def __init__(self):
-        super().__init__("gripper")
+        super().__init__('gripper')
         # Broadcast a static frame
         self.static_broadcaster = StaticTransformBroadcaster(self)
         world_base_tf = TransformStamped()
         world_base_tf.header.stamp = self.get_clock().now().to_msg()
-        world_base_tf.header.frame_id = "world"
-        world_base_tf.child_frame_id = "base"
+        world_base_tf.header.frame_id = 'world'
+        world_base_tf.child_frame_id = 'base'
         self.static_broadcaster.sendTransform(world_base_tf)
 
-        # We use TRANSIENT_LOCAL durability for the publisher. By setting both publisher and subscriber
-        # Durability to TRANSIENT_LOCAL we emulate the effect of "latched publishers" from ROS 1
+        # We use TRANSIENT_LOCAL durability for the publisher.
+        # By setting both publisher and subscriber
+        # Durability to TRANSIENT_LOCAL we emulate the effect of 'latched publishers' from ROS 1
         # (See https://github.com/ros2/ros2/issues/464)
         # Essentially this means that when subscribers first connect to the topic they receive the
         # last message published on the topic. Useful for example because rviz might open after
         # the initial markers are published
         markerQoS = QoSProfile(depth=10, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
-        self.pub1 = self.create_publisher(Marker, "visualization_marker", markerQoS)
+        self.pub1 = self.create_publisher(Marker, 'visualization_marker', markerQoS)
         # The second link is oriented at 90 degrees
         self.m = Marker()
-        self.m.header.frame_id = "base"
+        self.m.header.frame_id = 'base'
         self.m.header.stamp = self.get_clock().now().to_msg()
         self.m.id = 1
         self.m.type = Marker.CYLINDER
@@ -60,7 +68,7 @@ class Gripper(Node):
         self.pub1.publish(self.m)
 
         self.m1 = Marker()
-        self.m1.header.frame_id = "base"
+        self.m1.header.frame_id = 'base'
         self.m1.header.stamp = self.get_clock().now().to_msg()
         self.m1.id = 2
         self.m1.type = Marker.CYLINDER
@@ -81,12 +89,12 @@ class Gripper(Node):
         self.m1.color.a = 1.0
         self.pub1.publish(self.m1)
 
-        self.server = InteractiveMarkerServer(self, "gripper_marker")
+        self.server = InteractiveMarkerServer(self, 'gripper_marker')
 
         int_marker = InteractiveMarker()
-        int_marker.header.frame_id = "base"
-        int_marker.name = "gripper"
-        int_marker.description = "Move to open/close the gripper"
+        int_marker.header.frame_id = 'base'
+        int_marker.name = 'gripper'
+        int_marker.description = 'Move to open/close the gripper'
         int_marker.pose.orientation.w = .707
         int_marker.pose.orientation.z = .707
 
@@ -104,11 +112,10 @@ class Gripper(Node):
         box_control.always_visible = True
         box_control.markers.append(box_marker)
 
-
         int_marker.controls.append(box_control)
 
         speed_control = InteractiveMarkerControl()
-        speed_control.name = "move"
+        speed_control.name = 'move'
         speed_control.interaction_mode = InteractiveMarkerControl.ROTATE_AXIS
 
         int_marker.controls.append(speed_control)
@@ -117,8 +124,15 @@ class Gripper(Node):
         self.server.applyChanges()
 
     def callback(self, feedback):
-        """ Callback for interactive markers.  feedback contains the pose of the marker from rviz """
-        self.get_logger().info("Log")
+        """
+        Handle interactive markers feedback.
+
+        Args:
+        ----
+        feedback : contains the pose of the marker from rviz.
+
+        """
+        self.get_logger().info('Log')
         w = feedback.pose.orientation.w
         self.m.pose.position.x = 3*w
         self.m1.pose.position.x = -self.m.pose.position.x
@@ -128,9 +142,11 @@ class Gripper(Node):
         self.m1.header.stamp = self.get_clock().now().to_msg()
         self.pub1.publish(self.m)
         self.pub1.publish(self.m1)
-        self.get_logger().info("Logout")
+        self.get_logger().info('Logout')
+
 
 def gripper_entry(args=None):
+    """Entry point for the gripper Node."""
     rclpy.init(args=args)
     node = Gripper()
     rclpy.spin(node)
