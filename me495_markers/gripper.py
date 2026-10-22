@@ -6,6 +6,7 @@ from interactive_markers.interactive_marker_server import (
     InteractiveMarker, InteractiveMarkerServer)
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import ExternalShutdownException
 from rclpy.qos import QoSDurabilityPolicy, QoSProfile
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from visualization_msgs.msg import InteractiveMarkerControl, Marker
@@ -147,7 +148,9 @@ class Gripper(Node):
 
 def gripper_entry(args=None):
     """Entry point for the gripper Node."""
-    rclpy.init(args=args)
-    node = Gripper()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        with rclpy.init(args=args):
+            node = Gripper()
+            rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
